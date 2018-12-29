@@ -1,0 +1,208 @@
+{
+	"info": {
+		"_postman_id": "c09e4d6b-0357-4c0f-9922-5fe77ff7877b",
+		"name": "v2deployment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "authorize with user credentials Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a140be19-74f1-4ccd-ab65-d39595de0780",
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"const { access_token } = jsonData;",
+							"postman.setEnvironmentVariable(\"ACCESS_TOKEN\", access_token);",
+							"",
+							"pm.test('Access Token created', function () {",
+							"",
+							"var token = pm.environment.get(\"ACCESS_TOKEN\");",
+							"    pm.expect(access_token).to.eql(token);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"client_id\":\"{{CLIENT_ID}}\",\n\t\"client_secret\":\"{{CLIENT_SECRET}}\",\n\t\"audience\":\"https://dev-api.s6beta.com\",\n\t\"grant_type\":\"password\",\n\t\"username\": \"{{ADMIN_USERNAME}}\",\n\t\"password\": \"{{ADMIN_PASSWORD}}\"\n}"
+				},
+				"url": {
+					"raw": "https://{{AUTH0_DOMAIN}}/oauth/token",
+					"protocol": "https",
+					"host": [
+						"{{AUTH0_DOMAIN}}"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				},
+				"description": "Generated from a curl request: \ncurl --request POST \\\n  --url https://corvium.auth0.com/oauth/token \\\n  --header 'content-type: application/json' \\\n  --data '{\\\"client_id\\\":\\\"bKD0ZbmlpOu6eNvTY4ZtK3KaMr9nYIbj\\\",\\\"client_secret\\\":\\\"hxucBwtxhAVnsLofZqr-NBcZm6x_yVDq08YrfhJx8xlPlOh-rNybXkWiZgtBIp5U\\\",\\\"audience\\\":\\\"https://dev-api.s6beta.com\\\",\\\"grant_type\\\":\\\"client_credentials\\\"}'"
+			},
+			"response": []
+		},
+		{
+			"name": "api",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9bbd22fb-e4a7-4a49-8276-4ac4369abbca",
+						"exec": [
+							"var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"        scenarios: {",
+							"            type: \"array\",",
+							"            items: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: {",
+							"                        type: \"string\"",
+							"                    },",
+							"                    name: {",
+							"                        type: \"string\"",
+							"                    },",
+							"                    siteId: {",
+							"                        type: \"string\"",
+							"                    },",
+							"                    testMethodIds: {",
+							"                        type: \"array\",",
+							"                        items: {",
+							"                            type: \"string\"",
+							"                        }",
+							"                    },",
+							"                    samples: {",
+							"                        type: \"array\",",
+							"                        items: {",
+							"                            type: \"object\",",
+							"                            properties: {",
+							"                                testMethodId: {",
+							"                                    type: \"string\"",
+							"                                },",
+							"                                testPointIds: {",
+							"                                    type: \"array\",",
+							"                                    items: {",
+							"                                        type: \"string\"",
+							"                                    }",
+							"                                }",
+							"                            }",
+							"                        }",
+							"                    },",
+							"                    randoms: {",
+							"                        type: \"array\",",
+							"                        items: {",
+							"                            type: \"object\",",
+							"                            properties: {",
+							"                                testMethodId: {",
+							"                                    type: \"string\"",
+							"                                },",
+							"                                nTestPoints: {",
+							"                                    type: \"integer\"",
+							"                                },",
+							"                                untestedOnly: {",
+							"                                    type: \"boolean\"",
+							"                                },",
+							"                                excludeScheduled: {",
+							"                                    type: \"boolean\"",
+							"                                },",
+							"                                filters: {",
+							"                                    type: \"object\",",
+							"                                    properties: {",
+							"                                        floorPlanIds: {",
+							"                                            type: \"array\",",
+							"                                            items: {",
+							"                                                type: \"string\"",
+							"                                            }",
+							"                                        },",
+							"                                        locationIds: {",
+							"                                            type: \"array\",",
+							"                                            items: {",
+							"                                                type: \"string\"",
+							"                                            }",
+							"                                        },",
+							"                                        zoneIds: {",
+							"                                            type: \"array\",",
+							"                                            items: {",
+							"                                                type: \"string\"",
+							"                                            }",
+							"                                        },",
+							"                                        programIds: {",
+							"                                            type: \"array\",",
+							"                                            items: {",
+							"                                                type: \"string\"",
+							"                                            }",
+							"                                        }",
+							"                                    }",
+							"                                }",
+							"                            }",
+							"                        }",
+							"                    }",
+							"                },",
+							"                required: [\"id\", \"name\", \"siteId\", \"testMethodIds\", \"samples\", \"randoms\"]",
+							"            }",
+							"        }",
+							"    }",
+							"};",
+							"",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");",
+							"});",
+							"",
+							"pm.test('Schema is valid', function () {",
+							"    var results = tv4.validateMultiple(pm.response.json(), schema)",
+							"    if (results.errors.length > 0) {",
+							"        tests[results.errors] = false",
+							"    }",
+							"",
+							"    pm.expect(results.valid).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ACCESS_TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/schedule",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"schedule"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
